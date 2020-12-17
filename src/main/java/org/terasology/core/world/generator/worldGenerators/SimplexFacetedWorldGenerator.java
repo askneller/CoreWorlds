@@ -5,7 +5,6 @@ package org.terasology.core.world.generator.worldGenerators;
 import org.terasology.core.world.generator.facetProviders.BiomeProvider;
 import org.terasology.core.world.generator.facetProviders.DefaultFloraProvider;
 import org.terasology.core.world.generator.facetProviders.DefaultTreeProvider;
-import org.terasology.core.world.generator.facetProviders.PlateauProvider;
 import org.terasology.core.world.generator.facetProviders.SeaLevelProvider;
 import org.terasology.core.world.generator.facetProviders.SimplexBaseSurfaceProvider;
 import org.terasology.core.world.generator.facetProviders.SimplexHillsAndMountainsProvider;
@@ -28,6 +27,7 @@ import org.terasology.registry.In;
 import org.terasology.world.generation.BaseFacetedWorldGenerator;
 import org.terasology.world.generation.WorldBuilder;
 import org.terasology.world.generator.RegisterWorldGenerator;
+import org.terasology.world.generator.plugin.WorldGeneratorListenerLibrary;
 import org.terasology.world.generator.plugin.WorldGeneratorPluginLibrary;
 
 /**
@@ -42,6 +42,9 @@ public class SimplexFacetedWorldGenerator extends BaseFacetedWorldGenerator {
     @In
     private WorldGeneratorPluginLibrary worldGeneratorPluginLibrary;
 
+    @In
+    private WorldGeneratorListenerLibrary worldGeneratorListenerLibrary;
+
     public SimplexFacetedWorldGenerator(SimpleUri uri) {
         super(uri);
     }
@@ -55,7 +58,7 @@ public class SimplexFacetedWorldGenerator extends BaseFacetedWorldGenerator {
     protected WorldBuilder createWorld() {
         int seaLevel = 32;
 
-        return new WorldBuilder(worldGeneratorPluginLibrary)
+        return new WorldBuilder(worldGeneratorPluginLibrary, worldGeneratorListenerLibrary)
                 .setSeaLevel(seaLevel)
                 .addProvider(new SeaLevelProvider(seaLevel))
                 .addProvider(new SimplexHumidityProvider())
