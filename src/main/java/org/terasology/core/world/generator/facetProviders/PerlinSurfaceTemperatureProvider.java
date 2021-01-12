@@ -15,8 +15,8 @@
  */
 package org.terasology.core.world.generator.facetProviders;
 
+import org.joml.Vector2f;
 import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2f;
 import org.terasology.utilities.procedural.BrownianNoise;
 import org.terasology.utilities.procedural.PerlinNoise;
 import org.terasology.utilities.procedural.SubSampledNoise;
@@ -43,7 +43,7 @@ public class PerlinSurfaceTemperatureProvider implements FacetProvider {
     @Override
     public void process(GeneratingRegion region) {
         SurfaceTemperatureFacet facet = new SurfaceTemperatureFacet(region.getRegion(), region.getBorderForFacet(SurfaceTemperatureFacet.class));
-        float[] noise = this.temperatureNoise.noise(facet.getWorldRegion());
+        float[] noise = this.temperatureNoise.noise(facet.getWorldArea());
 
         for (int i = 0; i < noise.length; ++i) {
             noise[i] = TeraMath.clamp((noise[i] * 2.11f + 1f) * 0.5f);

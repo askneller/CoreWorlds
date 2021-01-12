@@ -15,9 +15,9 @@
  */
 package org.terasology.core.world.generator.facetProviders;
 
+import org.joml.Vector2f;
 import org.terasology.entitySystem.Component;
 import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2f;
 import org.terasology.nui.properties.Range;
 import org.terasology.utilities.procedural.BrownianNoise;
 import org.terasology.utilities.procedural.SimplexNoise;
@@ -47,11 +47,11 @@ public class SimplexRiverProvider implements FacetProvider, ConfigurableFacetPro
     @Override
     public void process(GeneratingRegion region) {
         ElevationFacet facet = region.getRegionFacet(ElevationFacet.class);
-        float[] noise = riverNoise.noise(facet.getWorldRegion());
+        float[] noise = riverNoise.noise(facet.getWorldArea());
 
         float[] surfaceHeights = facet.getInternal();
         for (int i = 0; i < noise.length; ++i) {
-            surfaceHeights[i] += configuration.maxDepth * TeraMath.clamp(7f * (TeraMath.sqrt(Math.abs(noise[i] * 2.11f)) - 0.1f) + 0.25f);
+            surfaceHeights[i] += configuration.maxDepth * Math.min(0, Math.abs(noise[i]) * 20f - 1);
         }
     }
 

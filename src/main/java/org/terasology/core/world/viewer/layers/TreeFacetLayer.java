@@ -16,6 +16,18 @@
 
 package org.terasology.core.world.viewer.layers;
 
+import org.joml.Vector2f;
+import org.joml.Vector3ic;
+import org.terasology.core.world.generator.facets.TreeFacet;
+import org.terasology.core.world.generator.trees.TreeGenerator;
+import org.terasology.world.block.BlockRegion;
+import org.terasology.world.generation.Region;
+import org.terasology.world.viewer.layers.AbstractFacetLayer;
+import org.terasology.world.viewer.layers.Renders;
+import org.terasology.world.viewer.layers.ZOrder;
+import org.terasology.world.viewer.picker.CirclePicker;
+import org.terasology.world.viewer.picker.CirclePickerAll;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -26,18 +38,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.terasology.core.world.generator.facets.TreeFacet;
-import org.terasology.core.world.generator.trees.TreeGenerator;
-import org.terasology.math.Region3i;
-import org.terasology.math.geom.BaseVector3i;
-import org.terasology.math.geom.Vector2f;
-import org.terasology.world.generation.Region;
-import org.terasology.world.viewer.layers.AbstractFacetLayer;
-import org.terasology.world.viewer.layers.Renders;
-import org.terasology.world.viewer.layers.ZOrder;
-import org.terasology.world.viewer.picker.CirclePicker;
-import org.terasology.world.viewer.picker.CirclePickerAll;
 
 /**
  * Renders the tree coverage based on {@link TreeFacet}
@@ -57,10 +57,10 @@ public class TreeFacetLayer extends AbstractFacetLayer {
         Graphics2D g = img.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        for (Entry<BaseVector3i, TreeGenerator> entry : treeFacet.getRelativeEntries().entrySet()) {
+        for (Entry<Vector3ic, TreeGenerator> entry : treeFacet.getRelativeEntries().entrySet()) {
             TreeGenerator treeGen = entry.getValue();
-            int wx = entry.getKey().getX();
-            int wz = entry.getKey().getZ();
+            int wx = entry.getKey().x();
+            int wz = entry.getKey().z();
             int r = radiusFunc.apply(treeGen);
             Color color = colorFunc.apply(treeGen);
 
@@ -79,20 +79,19 @@ public class TreeFacetLayer extends AbstractFacetLayer {
     public String getWorldText(Region region, int wx, int wy) {
         TreeFacet treeFacet = region.getFacet(TreeFacet.class);
 
-        Region3i worldRegion = treeFacet.getWorldRegion();
-        Region3i relativeRegion = treeFacet.getRelativeRegion();
+        BlockRegion worldRegion = treeFacet.getWorldRegion();
+        BlockRegion relativeRegion = treeFacet.getRelativeRegion();
 
         int rx = wx - worldRegion.minX() + relativeRegion.minX();
         int rz = wy - worldRegion.minZ() + relativeRegion.minZ();
 
-        Vector2f relCursor = new Vector2f(rx, rz);
-        CirclePicker<TreeGenerator> picker = new CirclePickerAll<>(relCursor, radiusFunc);
+        CirclePicker<TreeGenerator> picker = new CirclePickerAll<>(new Vector2f(rx, rz), radiusFunc);
 
-        for (Entry<BaseVector3i, TreeGenerator> entry : treeFacet.getRelativeEntries().entrySet()) {
+        for (Entry<Vector3ic, TreeGenerator> entry : treeFacet.getRelativeEntries().entrySet()) {
             TreeGenerator treeGen = entry.getValue();
-            BaseVector3i treePos = entry.getKey();
+            Vector3ic treePos = entry.getKey();
 
-            picker.offer(treePos.getX(), treePos.getZ(), treeGen);
+            picker.offer(treePos.x(), treePos.z(), treeGen);
         }
 
         Set<TreeGenerator> picked = picker.getAll();

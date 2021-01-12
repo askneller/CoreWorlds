@@ -15,9 +15,9 @@
  */
 package org.terasology.core.world.generator.facetProviders;
 
+import org.joml.Vector2f;
 import org.terasology.entitySystem.Component;
 import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2f;
 import org.terasology.nui.properties.Range;
 import org.terasology.utilities.procedural.BrownianNoise;
 import org.terasology.utilities.procedural.PerlinNoise;
@@ -30,7 +30,6 @@ import org.terasology.world.generation.facets.ElevationFacet;
 
 /**
  * Applies an amount of the max depth for regions that are oceans
- * @deprecated Prefer using {@link SimplexOceanProvider}.
  */
 @Deprecated
 @Updates(@Facet(ElevationFacet.class))
@@ -48,7 +47,7 @@ public class PerlinOceanProvider implements ConfigurableFacetProvider {
     @Override
     public void process(GeneratingRegion region) {
         ElevationFacet facet = region.getRegionFacet(ElevationFacet.class);
-        float[] noise = oceanNoise.noise(facet.getWorldRegion());
+        float[] noise = oceanNoise.noise(facet.getWorldArea());
 
         float[] surfaceHeights = facet.getInternal();
         for (int i = 0; i < noise.length; ++i) {
